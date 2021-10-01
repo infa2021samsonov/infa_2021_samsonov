@@ -8,9 +8,18 @@ FPS = 30
 screen = pygame.display.set_mode((1300, 550))
 rect(screen, (255, 255, 255), [(0, 0), (1300, 600)])
 
+bodily = (228,199,178)
+green = (55, 125, 34)
+orange = (237, 110, 45)
+yellow = (249, 212, 83)
+purple= (195, 69, 246)
+light_green = (160, 250, 88)
+black = (0, 0, 0)
+
 
 def rukav(color, vertex_count, radius, position, k):
-    # k нужен для ориентации - правой или левой - он 1 или -1
+    "Функция, рисующая рукав"
+    "k нужен для ориентации - правой или левой - он 1 или -1 "
     n, r = vertex_count, radius
     x, y = position
     polygon(screen, color, [
@@ -24,6 +33,7 @@ def rukav(color, vertex_count, radius, position, k):
 
 
 def volos(a, x, y, color):
+    "Функция, рисующая волос"
     # а - угол через который расположены треугольники волос ~10deg
     a = a / 360 * 2 * m.pi
     polygon(screen, color, [(x + 150 * m.sin(a) - 25 * m.cos(a), y - 150 * m.cos(a) - 25 * m.sin(a)),
@@ -34,44 +44,80 @@ def volos(a, x, y, color):
                                 (x + 150 * m.sin(a) + 25 * m.cos(a), y - 150 * m.cos(a) + 25 * m.sin(a)),
                                 (x + (150 + 35) * m.sin(a), y - (150 + 35) * m.cos(a))], 1)
 
+def face(color, x,y,R):
+    #Функция, рисующая лицо
+    circle(screen, color , (x, y), R )
+
+def body(color, x,y,R):
+    #функция, рисующая тело
+    circle(screen, color, (x, y ), R, draw_top_left=True, draw_top_right=True)
+    
+def eye(color, x , y, R):
+    #рисует глаз
+    circle(screen, color , (x, y) , R)
+    circle(screen, (0, 0, 0), (x ,y), 8/27 *R)
+
+def palm(color, x, y, R):
+    #рисует ладонь
+    circle(screen, color, (x, y ), R, draw_bottom_left=True, draw_bottom_right=True)
+
+    
+def hand(color, x1, y1, x2, y2, size):
+    #рисует руку
+    line(screen, color, (x1,y1), (x2,y2), size)
+    
+
+    
 
 def human(x, y, heir, eyes, shirt):
 
-    circle(screen, shirt, (x, y + 200), 180, draw_top_left=True, draw_top_right=True)  # тело
-
-    circle(screen, (228, 199, 178), (x, y - 60), (150), )  # face
-
-    circle(screen, eyes, (x + 40, y - 100), 27)  # глаз правый
-    circle(screen, (0, 0, 0), (x + 40, y - 100), 8)  # зрачек правый
-    circle(screen, eyes, (x - 40, y - 100), 27)  # глаз левый
-    circle(screen, (0, 0, 0), (x - 40, y - 100), 8)  # зрачек левый
+    body (shirt, x, y+200,180)
+    #тело
+    
+    face(bodily, x, y-60, 150)
+    #лицо
+    
+    eye(eyes, x+40, y-100, 27)
+    eye(eyes, x-40, y-100, 27)
+    #глаза
 
     polygon(screen, (113, 70, 40), [(x, y - 50), (x + 10, y - 70), (x - 10, y - 70)])  # нос
     polygon(screen, (235, 66, 56), [(x, y + 20), (x - 80, y - 40), (x + 80, y - 40)])  # рот
-
-    line(screen, (228, 199, 178), (x - 150, y + 100), (x - 300, y - 260), 25)  # левая рука
-    line(screen, (228, 199, 178), (x + 150, y + 100), (x + 300, y - 260), 25)  # правая рука
-
-    circle(screen, (228, 199, 178), (x - 300, y - 260), 33, draw_bottom_left=True, draw_bottom_right=True)  # левая ладонь
-    circle(screen, (228, 199, 178), (x + 300, y - 260), 33, draw_bottom_left=True, draw_bottom_right=True)  # правая ладонь
-
-    # отрисовка рукавов
+    
+    hand(bodily, x-150, y+100, x-300, y-260, 25)
+    hand(bodily, x+150, y+100, x+300, y-260, 25)
+    #руки
+    
+    palm(bodily, x-300, y-260,33)
+    palm(bodily, x+300, y-260,33)
+    #ладони
+    
     rukav(shirt, 5, 74, (x - 150, y + 100), 0)
     rukav(shirt, 5, 74, (x + 150, y + 100), 1)
-
-    # отрисовка волос
+    #рукава
+    
     for i in range(-90, 105, 15):
         volos(i, x, y - 60, heir)
+    #волосы
     return 0
 
+def article(color1, color2, x,y, string):
+    #рисует надпись
+    rect(screen, color1, [(0, 0), (x, y)])
+    rect(screen, color2, [(0, 0), (x, y)], 1)
+    text = pygame.font.SysFont('pingfang', 65, True)
+    follow = text.render(string , True, (0, 0, 0))
+    return(follow)
 
-human(350, 360, (249, 212, 83), (192, 199, 184), (55, 125, 34))
-human(960, 360, (195, 69, 246), (133, 178, 240), (237, 110, 45))
+def draw_all():
+    #Функция рисует всю картинку
+    human(350, 360, yellow, (192, 199, 184), green)
+    human(960, 360, purple, (133, 178, 240), orange)
+    screen.blit(article(light_green,black,1300,100, "PYTHON is REALLY AMAZING!"), (120, 7))
+    
 
-rect(screen, (160, 250, 88), [(0, 0), (1300, 100)])
-rect(screen, (0, 0, 0), [(0, 0), (1300, 100)], 1)
-text = pygame.font.SysFont('pingfang', 65, True)
-follow = text.render("PYTHON is REALLY AMAZING!", True, (0, 0, 0))
+
+
 
 pygame.display.update()
 clock = pygame.time.Clock()
@@ -81,6 +127,6 @@ while not finished:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-    screen.blit(follow, (120, 7))
+    draw_all()
     pygame.display.update()
 pygame.quit()
